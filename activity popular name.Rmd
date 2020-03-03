@@ -1,0 +1,83 @@
+---
+title: "Activity: Popular Names"
+author: "Hongji Jiang, Naman Malviya"
+date: "2/25/2020"
+output: html_notebook
+---
+
+
+
+# Set Up
+
+```{r}
+# load necessary packages
+library(tidyverse)
+library(mosaic)
+library(DataComputing)
+```
+
+
+```{r}
+# Load the BabyNames data into RStudio environment (from DataComputing package)
+data("BabyNames")
+```
+
+# Activity
+
+**Goal**: By the end of the activity, each team will create a graph (like Figure A.1 on p 159) showing ups and downs in the popularity of four names (both teammates & two additional names) according to the U.S. social security administration  
+
+
+### Step 1
+```{r}
+##The variables are name sex count year
+##A case in babyname data means the repeated number of a certain first name given in a year for a boy or girl.
+summary(BabyNames)
+##According to summary, there are 1792091 cases, name appeared at min 5 and max 99674 times a year for male or female. The the data shows name across 1880 to 2013.
+```
+
+
+
+### Step 3
+```{r}
+## Q:What variable(s) from the raw data table do not appear at all in the graph?
+## Variable sex
+
+## Q:What variable(s) in the graph are similar to corresponding variables in the raw data table, but might have been transformed in some way?
+## The populaity is similar to the count, but add both male and female of same name in certain year.
+```
+
+
+### Step 4
+```{r}
+##Have cases been filtered out?
+##Yes,name other than John, Jessie, Mary, and Anna have been filtered out.
+
+##Have cases been grouped and summarized within groups in any way?
+##The female and male case have been summarized into the popularity by sum up.
+
+##Have any new variables been introduced? If so, what’s the relationship between the new variables and existing variables?
+##The new variable popularity is the sum of both male and female count.
+
+```
+
+
+### Step 5
+```{r}
+##First, group the data with name and year. Then, filter the name required (Joh, Jessie, Mary, and Anna). Last, summarise the data and sum up the count of each name in each year.
+```
+
+
+
+### Step 7
+```{r}
+a <- BabyNames %>%  
+  group_by(name, year)%>%
+  filter(name %in% c("John","Jessie","Mary","Anna"))%>%
+  summarise(popularity = sum(count, na.rm=TRUE))
+
+a %>% 
+  ggplot(aes(x = year, y = popularity, group = name)) +
+  geom_line( size = 1, alpha = 0.5, aes(color = name)) +
+  ylab("Popularity") + xlab("Year")
+
+```

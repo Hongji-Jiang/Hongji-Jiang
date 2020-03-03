@@ -1,0 +1,120 @@
+###Problem 7.1
+##1 Neither
+##2 Neither
+##3 Neither
+##4 Transformation
+##5 Transformation
+##6 Reduction
+##7 Transformation
+##8 Reduction
+
+### Problem 7.3
+library(dplyr)
+library(ggplot2)
+library(DataComputing)
+data("Minneapolis2013")
+
+##7.3.1
+Minneapolis2013 %>%
+  summarise(count = n())
+##There are 80101 cases
+
+##7.3.2
+Minneapolis2013 %>%
+  group_by(Second) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  head(6)
+##The top five candidates are BETSY HODGES, DON SAMUELS, MARK ANDREW, JACKIE CHERRYHOMES, and BOB FINE.
+
+##7.3.3
+Minneapolis2013 %>%
+  filter(First == "undervote") %>%
+  summarise(count = n())
+##There are 834
+
+Minneapolis2013 %>%
+  filter(Second == "undervote") %>%
+  summarise(count = n())
+##There are 10598
+
+Minneapolis2013 %>%
+  filter(Third == "undervote") %>%
+  summarise(count = n())
+##There are 19210
+
+##7.3.4
+Minneapolis2013 %>%
+  group_by(First, Second) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+##The top 3 combination is BETSY HODGES MARK ANDREW, BETSY HODGES DON SAMUELS , and MARK ANDREW  BETSY HODGES
+
+##7.3.5
+Minneapolis2013 %>%
+  group_by(Precinct) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+##P-06 has the highest ballots cast.
+
+###Problem 7.5
+
+##a
+VoterData_A <-
+  Minneapolis2013 %>%
+  group_by(First, Second)
+VoterData_A
+##There are no diffference between VoterData_A and orginal data.
+##The case represent the First, second, and third vote for each candidate in specific precinct for certain ward.
+
+##b
+VoterData_B <-
+  Minneapolis2013 %>%
+  summarise( total = n() )
+VoterData_B
+##The VoterData_B modified the original data to the sum of the total cases
+##A case represent the total cases in original data.
+
+##c
+VoterData_C <-
+  Minneapolis2013 %>%
+  group_by(First, Second) %>%
+  summarise( total = n() )
+VoterData_C
+##The VoterData_C modified the data to group each First and Second candidate together, and count their ballots
+##The case represent the First and Second candidates' combination and their votes(not combination of votes, but the candidates)
+
+##d
+VoterData_D <-
+  Minneapolis2013 %>%
+  summarise( total = n() ) %>%
+  group_by(First, Second) 
+VoterData_D
+##After the summarise function, the Minneapolis2003 data has been modified and there are no First variable in new modified data( which only contain total cases)
+
+
+###Problem 7.7
+##a
+##sex, count, meanage
+
+##b
+##diagnosis, count, meanage
+
+##c
+##sex, diagnosis, count, meanage
+
+##d
+##age, diagnosis, count, meanage
+
+##e
+##age, diagnosis, count, meanage
+
+
+###Problem 7.8
+##1
+data(ZipDemography)
+ggplot(data=ZipDemography,aes(x=Foreignborn,y=SpeakalanguageotherthanEnglishathome5yearsandover))+geom_point()
+scatterGraphHelper(ZipDemography)
+
+##2
+##Set the y axis as Bachelorsdegreeorhigher and x axis as totalpopulation. Do the linear regression for this model and calculate the fitted line.

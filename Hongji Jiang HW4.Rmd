@@ -1,0 +1,43 @@
+---
+title: "DC excercise 5&6"
+output: html_notebook
+---
+
+
+```{r}
+##cahpter 5
+##problem 1
+library(mosaicData)
+library(DataComputing)
+ggplot(data=CPS85,aes(x=sex,y=wage ,fill=married))+geom_bar(stat='identity',position='dodge', width=.9)+ facet_wrap(~race,ncol=3)
+library(png)
+library(grid)
+img <- readPNG("1.PNG")
+grid.raster(img)
+
+##chapter 5
+##problem 2
+ggplot( data = NCHS, aes(x = bmi, fill = sex)) + geom_density(adjust = 1, alpha = 0.4, color = NA) + aes(colour = sex) + facet_wrap(~pregnant, ncol = 4) + labs(title = "") + theme(legend.position = "right")+ theme_bw()
+library(png)
+library(grid)
+dimg <- readPNG("2.PNG")
+grid.raster(dimg)
+
+
+
+##cahpter 6
+##problem 5
+##choose A
+
+##cahpter 6
+##problem 6
+##choose D
+
+##cahpter 6
+##problem 7
+##choose B
+
+##cahpter 6
+##problem 8
+##choose E
+```

@@ -1,0 +1,151 @@
+
+---
+title: "Activity: Bird Species"
+author: "Hongji Jiang"
+date: "3/3/2020"
+output: html_notebook
+---
+
+
+# Set Up
+
+```{r}
+# Load `tidyverse` and `DataComputing` packages
+library(tidyverse)
+library(DataComputing)
+# Load the `OrdwayBirds` data set into your RStudio environment from the `DataComputing` package
+data(OrdwayBirds)
+# Show a few commands used to inspect the data set a few different ways
+view(OrdwayBirds)
+
+```
+
+# Activity
+
+When you're finished with this activity, you will have a graph that shows what time of year various species appear at the Katherine Ordway Natural History Study Area in Inver Grove Heights, MN.
+
+### Step 0
+
+Before we begin, the book gives us some instructions to select a few key variables and clean up the date formatting.  Use the commands given in the book, but be sure to study the functions used so you know what is happening.  In this case, we select `SpeciesName`, `Month`, and `Day`. Then a `mutate()` command converts each variable to character, and then converts the resulting "character string" to a number.
+
+```{r}
+# Get the data table & clean up dates (see Data Computing eBook)
+OrdwayBirds <-
+  OrdwayBirds %>%
+  select( SpeciesName, Month, Day ) %>%
+  mutate( Month = as.numeric(as.character(Month)), 
+          Day = as.numeric(as.character(Day)))
+# Inspect resulting data
+View(OrdwayBirds)
+```
+
+
+
+### Step 1
+```{r}
+#Including mis-spellings, how many different species are there in the OrdwayBirds data?
+n_distinct(OrdwayBirds$SpeciesName)
+
+# unique species in the clean list
+data(OrdwaySpeciesNames)
+n_distinct(OrdwaySpeciesNames$SpeciesNameCleaned)
+```
+
+### Step 2
+```{r}
+# inspect OrdwaySpeciesNames
+View(OrdwaySpeciesNames)
+
+# inner join
+Corrected <-
+  OrdwayBirds %>%
+  inner_join( OrdwaySpeciesNames ) %>% 
+  select( Species = SpeciesNameCleaned, Month, Day ) %>%
+  na.omit()
+
+# inspect the data after the join
+View(Corrected)
+
+#Which variable(s) was used for matching cases?
+#SpeciesNameCleaned in OrdwaySpeciesNames and SpeciesName in OrdwayBirds
+
+#What were the variable(s) that will be added?
+#Month and Day
+
+```
+
+
+### Step 3
+
+We want to identify the top 5-6 bird species sighted at the Katherine Ordway Natural History Study Area.
+
+```{r}
+# count sightings by species in descending order
+a <- Corrected%>%
+  group_by(Species)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+a
+ 
+a %>% head(10)
+
+# a hint on p.164 recommends displaying the top 10 species to choose our threshold
+Major<-a%>%
+  mutate(Major = if_else(count>459, "Major Species", Species, missing = NULL))%>%
+  filter(Major == "Major Species")
+Major
+
+# define a sightings threshold; produce a table with only birds belonging to major species
+Table<-Corrected%>%inner_join(Major)
+Table
+```
+
+### Step 4
+
+We now want to produce a month-by-month count for each of the major species, and then construct a chart to tell the story of what time of year the various species appear.
+
+```{r}
+# prepare glyph-ready data table called `ByMonth`
+Bymonth<-Table%>%
+  group_by(Species,Month)%>%
+  summarise(count=n())%>%
+  arrange(Month)
+Bymonth
+```
+
+```{r}
+# ggplot command
+ggplot(data=Bymonth,aes(x=Month,y=count ))+geom_bar(stat='identity',position='stack', width=.9)+ facet_wrap(~Species,ncol=3)
+```
+
+According to the graph, we can answer the questions posed:
+
+##### 1. Which species are present year-round?  
+American Goldfinch, Tree Swallow, and Black-caooed Chickadee are present year-round
+
+
+##### 2. Which species are migratory, that is, primarily present in one or two seasons?
+Catbird, Field Sparrow, House Wren, Lincoln's Sparrow, Robin, Slate-Colored Junco, Song Sparrow.
+
+
+
+##### 3. What is the peak month for each major species? (bullet list)
+*Tree Swallow: March
+*Robin: April and May
+*Slate-colored Junco: October
+*Song Sparrow: April
+*Field Sparrow: May
+*House Wren: June
+*Lincoln's Sparrow: October and September
+*Catbird: May
+*Black-capped Chickadee: November
+*American Goldfinch: October
+
+
+
+##### 4. Which major species are seen in good numbers for at least 6 months of the year?
+Black-capped Chickadee, Tree Swallow, Slate-colored Junco, American Goldfinch
+
+
+```{r}
+```

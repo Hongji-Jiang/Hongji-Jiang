@@ -1,0 +1,116 @@
+---
+title: "DC exercise Chapter 10"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: February 25, 2020
+---
+```{r}
+##10.1
+##1:summary function 2:Data verb 3:Data verb 4:Reduction Function 5:Data verb 6:summary function 7:Data verb 8:summary function
+```
+
+```{r}
+##10.2
+##1:mutate, 2:arrange(desc()), 3:filter, 4:select, 5:group_by, (arrange)
+```
+
+```{r}
+##10.3
+##1:nrow(), 2:names(), 3:help(), 4:library(), 5:group_by()
+```
+
+```{r}
+##10.4
+library(DataComputing)
+library(ggplot2)
+DataComputing::BabyNames
+```
+```{r}
+##A
+BabyNames %>%
+  arrange(sex,count)
+```
+```{r}
+##B
+BabyNames %>%
+  filter(sex=="F")
+```
+```{r}
+##C
+BabyNames %>%
+  filter(sex == "M")
+```
+```{r}
+##D
+BabyNames %>%
+  summarise(total = sum(count))
+```
+```{r}
+##E
+BabyNames %>%
+  select(name,count)
+```
+
+```{r}
+##10.5
+DataComputing::Minneapolis2013
+##a
+##By filter function we choose the case that have same name in First and Second and summarise them to calculate the number.
+Minneapolis2013%>%
+  filter(First == Second)%>%
+  summarise(total = n())
+```
+```{r}
+##b
+##Filte the case that is same name by filter function, group the First and Second variable, and calculate the total number. Arranging the number in descending order.
+Minneapolis2013%>%
+  filter(First == Second)%>%
+  group_by(First,Second)%>%
+  summarise(total = n())%>%
+  arrange(desc(total))%>%
+  head(3)
+```
+```{r}
+##c
+##First group the First and second variable, and filter the cases that is ILE SAVIOR in first. Then summarise the total number and arrange them in descending order and head shows that top 3.
+Minneapolis2013%>%
+  group_by(First,Second)%>%
+  filter(First == "OLE SAVIOR")%>%
+  summarise(total = n())%>%
+  arrange(desc(total))%>%
+  head(3)
+```
+
+```{r}
+##10.6
+data("diamonds")
+View(diamonds)
+##a
+diamonds %>% 
+  select(color,carat) %>% 
+  mutate(meancarat = mean(carat) ) %>% 
+  arrange(desc( meancarat )) %>% 
+  head( 1 )
+```
+```{r}
+##b
+diamonds %>%  
+  group_by(clarity)%>%
+  summarise(tablepercarat=mean(table/carat))%>%
+  arrange(desc( tablepercarat )) %>%
+  head( 1 )
+```
+
+```{r}
+##10.7
+Minneapolis2013 %>%
+  group_by(First) %>%
+  summarise(total = n())%>%
+  mutate(First = if_else(total < 5000, "minor", First))
+
+```
+
+

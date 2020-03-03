@@ -1,0 +1,43 @@
+---
+title: "Graph Exploration"
+author: "Iffah Mohamad Saufi, Arush Pamulapati, Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: February 10, 2020
+---
+
+
+```{r}
+##A
+##There are 77 cases in cereal data.
+##There are three variables, the name for each cases is shown in x axis, the y axis represent calories for each case, and the color represent the protein in certain case. The lighter blue means more protein, and the hgiher bar means more calories. 
+
+cereal=read.csv("cereal.csv",header = T)
+data.frame(cereal)
+library(DataComputing)
+ggplot(data=cereal,aes(x=name,y=calories ,fill=protein))+geom_bar(stat='identity',position='stack', width=.9)
+
+library(png)
+library(grid)
+img <- readPNG("1.PNG")
+grid.raster(img)
+
+##Most of the cereal have average 110 calories, while some have more protein and some have less protein.
+
+##B
+##There have total 53940 cases.
+##There are 4 variables in the graph, x represent the carat of a diamond, y represent the price of a diamond, different colour means different clarity, and different facet means different diamond color.
+
+data.frame(diamonds)
+ggplot(data=diamonds,aes(x=carat,y=price))+geom_point()+aes(colour=clarity)+facet_wrap(~color,ncol=4)
+
+library(png)
+library(grid)
+img2 <- readPNG("2.PNG")
+grid.raster(img2)
+
+##As the carat and clarity increase, the diamont would be more expensive. I1 is the highest clarity. Also, there are no obvious difference of the relationship between price, calrity, and carat from different color of diamond.
+```
+

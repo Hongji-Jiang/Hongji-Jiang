@@ -1,0 +1,131 @@
+---
+title: "DC exercise Chapter 11"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 3/2/2020
+---
+#Chapter 10
+###1
+Because join function is to combine two table together to form a new table, the table is required in parentheses
+
+###2
+When join two tables, there will be some variable from first table that does not exist in another table. And therefore some variable would have NA in long and lat in new talbe.
+
+
+###6
+```{r}
+data(ZipGeography)
+View(ZipGeography)
+```
+
+```{r}
+#6.1
+ZipGeography%>%
+  group_by(County)%>%
+  summarise(count=n())
+#There are 1910 different counties
+```
+
+```{r}
+#6.2
+a<- ZipGeography%>%
+  group_by(CityName,State)%>%
+  summarise(count=n())
+
+b<- a%>%
+  select(CityName,State)
+
+c<- b%>%
+  group_by(CityName)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+c
+```
+
+```{r}
+#6.3
+StatePopulation <-ZipGeography%>%
+  group_by(State)%>%
+  summarise(Statetotal=sum(Population, na.rm = TRUE))
+
+StatePopulation <- StatePopulation %>% filter(State != "")
+
+CityPopulation <- ZipGeography%>%
+  group_by(State,CityName)%>%
+  summarise(Citytotal=sum(Population,na.rm = TRUE))
+
+CityPopulation <- CityPopulation %>% filter(CityName != " ") %>% filter(State != "")
+
+Full <- CityPopulation%>%inner_join(StatePopulation, by = "State")
+Full <-Full%>%
+  mutate(Rate = Citytotal / Statetotal)%>%
+  filter(Rate > 0.05)
+Full
+#There are list for more than 5%.
+
+Full%>%
+  group_by(CityName)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+
+
+```
+
+
+
+```{r}
+#6.4
+x<- ZipGeography%>%
+  group_by(Timezone,State)%>%
+  summarise(count=n())%>%
+  select(Timezone,State)
+y<-x%>%
+  group_by(State)%>%
+  summarise(count=n())%>%
+  filter(count>1)%>%
+  arrange(desc(count))
+y
+```
+```{r}
+#6.5
+Data1<-ZipGeography%>%
+  group_by(Timezone,CityName)%>%
+  summarise(count=n())
+Data1%>%
+  group_by(CityName)%>%
+  summarise(count=n())%>%
+  filter(count>1)
+#There are no city that have two timezone
+
+```
+
+```{r}
+
+Data2<-ZipGeography%>%
+  group_by(Timezone,County)%>%
+  summarise(count=n())%>%
+  select(Timezone,County)
+Data2%>%
+  group_by(County)%>%
+  summarise(count=n())%>%
+  filter(count>1)%>%
+  arrange(desc(count))
+#These are the counties that have more than one timezone
+
+```
+
+#7.1
+origincode to origin, destcode to dest. Y2000, countryB, countryA stays same. And toAfromB to B to A?
+
+#7.2
+countryA = origincode, countryB = destcode
+
+#7.3
+iso_a3 = countryA
+
+#7.4
+iso_a3 = countryB
+```
