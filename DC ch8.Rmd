@@ -1,0 +1,114 @@
+---
+title: "DC Exercise 8"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 3/17/2020
+---
+
+
+#1
+geom_point()
+Make scatter plot
+
+geom_histogram()
+make histogram
+
+ggplot()
+Build the initial plot object
+
+scale_y_log10()
+Log axis for y
+
+ylab()
+Creat label for y axis
+
+facet_wrap()
+Make subplot(facet)
+
+geom_segment()
+Draw a straight line between points (x, y) and (xend, yend)
+
+xlim()
+range of x axis	
+
+
+facet_grid()
+Form a matrix of panels defined by row and column faceting variables
+
+
+#2
+```{r}
+library(mosaicData)
+library(ggplot2)
+library(DataComputing)
+a <- mosaicData::CPS85
+```
+
+#A
+```{r}
+a %>%
+  ggplot(aes(x = wage)) + geom_density(aes(color = sex, fill = sex), alpha = 0.3) + facet_wrap( ~ married) 
+```
+
+#B
+```{r}
+a %>%
+  ggplot(aes(x = age, y = wage)) + facet_wrap(~married, ncol = 1) + geom_smooth( method = loess) + aes(color = sex)
+
+```
+
+#C
+```{r}
+a %>%
+  ggplot(aes(x = age, y = wage)) + geom_smooth( method = loess) + facet_wrap(~sector, ncol = 3) + aes(color = sex) + xlim(10, 70) + ylim(0,25)
+
+```
+
+
+
+#3
+#A
+```{r}
+a %>%
+  ggplot(aes(x = age, y = wage)) +
+  geom_point()
+```
+#B
+```{r}
+a %>%
+  ggplot(aes(x = age, y = wage, shape = sex)) +
+  geom_point()
+```
+#C
+```{r}
+a %>%
+  ggplot(aes(x = age, y = wage, shape = sex)) +
+  geom_point() + facet_wrap(~married, ncol = 1)
+```
+##D
+```{r}
+a%>%
+  ggplot(aes(x = age, y = wage, shape = married)) +
+  geom_point() + ylim(0,30)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
