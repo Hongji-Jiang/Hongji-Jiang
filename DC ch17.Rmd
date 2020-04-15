@@ -1,0 +1,107 @@
+---
+title: "DC Exercise 17"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 4/14/2020
+---
+
+#17.1
+```{r}
+library(ggplot2)
+library(DataComputing)
+library(dplyr)
+
+```
+
+
+```{r}
+data("BabyNames")
+BabyNames %>% 
+  group_by(name, sex) %>%
+  filter(sex == "M")%>%
+  filter(grepl("[aeiou]$", name, ignore.case = TRUE))%>%
+  summarise(total = sum(count)) %>%
+  arrange(desc(total))%>%
+  head(10)
+##Boys’ names ending in a vowel.
+```
+```{r}
+BabyNames %>% 
+  group_by(name, sex) %>%
+  filter(grepl(" ", name, ignore.case = TRUE))%>%
+  summarise(total = sum(count)) %>%
+  arrange(desc(total))%>%
+  head(10)
+##Names with a space (like Lee Ann)
+```
+```{r}
+BabyNames %>% 
+  group_by(name, sex) %>%
+  filter(grepl("Joe$", name, ignore.case = TRUE))%>%
+  summarise(total = sum(count)) %>%
+  arrange(desc(total))%>%
+  head(10)
+##Names ending with “joe” (like BettyJoe)
+```
+
+#17.3
+
+looks like an advertisment phone number
+
+such as 812-555-6666
+
+
+#17.4
+##1: the string length can be varied from 1-19
+##2: 50 different string will match
+##3: this is the pattern of the state in US
+
+#17.5
+```{r}
+BibleNames <- readr::read_csv("http://tiny.cc/dcf/BibleNames.csv")
+BibleNames %>% 
+  group_by(name) %>%
+  filter(grepl("bar|lory|dam", name, ignore.case = TRUE))
+##Which names have any of these words in them: “bar”, “dam”, “lory”?
+```
+
+
+```{r}
+BibleNames %>% 
+  group_by(name) %>%
+  filter(grepl("bar$|lory$|dam$", name, ignore.case = TRUE))
+##Which names end with those words?
+```
+
+
+#17.7
+```{r}
+BabyNames %>%
+  group_by(name) %>%
+  summarise(total = sum(count)) %>%
+  inner_join(BibleNames,by = c("name" = "name"))%>%
+  arrange(desc(total))%>%
+  head(10)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

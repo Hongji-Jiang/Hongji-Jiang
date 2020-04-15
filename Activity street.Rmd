@@ -1,0 +1,169 @@
+---
+title: "Activity street"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 4/14/2020
+---
+
+
+```{r}
+library(ggplot2)
+library(DataComputing)
+library(dplyr)
+library(readr)
+
+download.file(url="http://tiny.cc/dcf/CMS_ProvidersSimple.rds",
+              destfile = "YourNameForTheFile.rds")
+DataTable <- readRDS("YourNameForTheFile.rds")
+```
+##Example: extract the PO Box number from an address
+```{r}
+Addresses <- read_csv("http://tiny.cc/dcf/street-addresses.csv")
+Sample <- 
+  Addresses %>%
+  sample_n(size = 50)
+
+Matches <- 
+  Sample %>%
+  filter(grepl(pattern = "PO", address))
+
+Dont <- 
+  Sample %>%
+  filter( ! grepl(pattern = "PO", address))
+
+pattern <- "BOX\\s+(\\d+)"
+
+Matches <- 
+  Sample %>% 
+  filter(grepl(pattern, address))
+
+Dont <-
+  Sample %>%
+  filter( ! grepl(pattern, address))
+Dont
+
+BoxNumbers <- 
+  Sample %>%
+  filter(grepl(pattern, address)) %>%
+  tidyr::extract(address, into = "boxnum", regex = pattern)
+BoxNumbers
+
+```
+
+##explain each line of code in English (either narrative or commented code)
+```{r}
+pattern <- "(ST|RD|ROAD)"
+##Assign "(ST|RD|ROAD)" to pattern
+
+LeftOvers <-
+  Addresses %>% 
+  filter( ! grepl(pattern, address),
+          ! grepl("\\sAPT|UNIT\\s[\\d]+$", address),
+          ! grepl(" BOX ", address)
+          )
+##Filter out any variable in address that contain any st, rd, or road.
+##Filter out any address that contain " APT" or "UNIT [digit]" zero or more times in the end
+##Filter out any address that contain " BOX "
+View(LeftOvers)
+```
+
+##expand to match several more patterns (at least 12 total)
+```{r}
+pattern1 <- "CIRCLE$|CIR$"
+pattern2 <- "WAY$"
+pattern3 <- "AVE$"
+pattern4 <- "LN$"
+pattern5 <- "DR$"
+pattern6 <- "TRAIL$"
+pattern7 <- "BX"
+pattern8 <- "HOUSE|HOME|HALL"
+pattern9 <- "DRIVE$"
+pattern10 <- "COLLEGE$|UNIVERSITY$"
+pattern11 <- "\\d"
+pattern12 <- "HOSPITAL$"
+
+
+LeftOvers %>% 
+  filter( ! grepl(pattern1, address),
+          ! grepl(pattern2, address),
+          ! grepl(pattern3, address),
+          ! grepl(pattern4, address),
+          ! grepl(pattern5, address),
+          ! grepl(pattern6, address),
+          ! grepl(pattern7, address),
+          ! grepl(pattern8, address),
+          ! grepl(pattern9, address),
+          ! grepl(pattern10, address),
+          ! grepl(pattern11, address),
+          ! grepl(pattern12, address)
+          )
+
+```
+
+##provide a table in descending order of popularity for the street name identifiers you found
+```{r}
+pattern1. <- LeftOvers%>%
+  filter(grepl(pattern1,address))%>%
+  mutate( pattern = "CIRCLE$|CIR$")
+pattern2. <- LeftOvers%>%
+  filter(grepl(pattern1,address))%>%
+  mutate( pattern = "WAY$")
+pattern3. <- LeftOvers%>%
+  filter(grepl(pattern3,address))%>%
+  mutate( pattern = "AVE$")
+pattern4. <- LeftOvers%>%
+  filter(grepl(pattern4,address))%>%
+  mutate( pattern = "LN$")
+pattern5. <- LeftOvers%>%
+  filter(grepl(pattern5,address))%>%
+  mutate( pattern = "DR$")
+pattern6. <- LeftOvers%>%
+  filter(grepl(pattern6,address))%>%
+  mutate( pattern = "TRAIL$")
+pattern7. <- LeftOvers%>%
+  filter(grepl(pattern7,address))%>%
+  mutate( pattern = "BX")
+pattern8. <- LeftOvers%>%
+  filter(grepl(pattern8,address))%>%
+  mutate( pattern = "HOUSE|HOME|HALL")
+pattern9. <- LeftOvers%>%
+  filter(grepl(pattern9,address))%>%
+  mutate( pattern = "DRIVE$")
+pattern10. <- LeftOvers%>%
+  filter(grepl(pattern10,address))%>%
+  mutate( pattern = "COLLEGE$|UNIVERSITY$")
+pattern12.<- LeftOvers%>%
+  filter(grepl(pattern12,address))%>%
+  mutate( pattern = "HOSPITAL$")
+
+
+patternplot <- pattern1.%>%
+  full_join(pattern2., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern3., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern4., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern5., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern6., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern7., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern8., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern9., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern10., by = c("address" ="address", "pattern" = "pattern"))%>%
+  full_join(pattern12., by = c("address" ="address", "pattern" = "pattern"))%>%
+  group_by(pattern)%>%
+  summarise(count = n())%>%
+  arrange(desc(count))
+patternplot
+```
+
+##use ggplot to construct a bar chart in descending order of popularity for the street name identifiers you found.
+```{r}
+ggplot(patternplot,aes(x = pattern, y = count)) + geom_bar(stat = "identity") + coord_flip()
+
+```
+
+
+
+
+
