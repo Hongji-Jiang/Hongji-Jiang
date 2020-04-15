@@ -1,0 +1,118 @@
+---
+title: "Activity: Scraping Nuclear Reactors"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 3/31/2020
+---
+
+
+```{r}
+library(rvest)
+library(lubridate)
+library(ggplot2)
+library(mosaic)
+library(mosaicData)
+library(DataComputing)
+library(tidyverse)
+```
+```{r}
+page <- "https://en.wikipedia.org/wiki/List_of_nuclear_reactors"
+tableList <- page %>%
+  read_html() %>%
+  html_nodes(css = "table") %>%
+  html_table(fill = TRUE)
+Japan <-tableList[[22]]
+Japan
+
+```
+
+#1
+In what ways is the table tidy?: There are only one data for each variable regarding each case.
+
+How is it not tidy?: Variable with same name with different data, such as two Capacity in MW and two Reactor.
+
+What’s different about it from a tidy table?: The variable name is also in the table(first row).
+
+```{r}
+colnames(Japan)[3]<- "type"
+Japannew<-Japan[,-7]
+
+Japannew<-Japannew %>%
+  filter(row_number() > 1) %>%
+  rename(name = Name, 
+         reactor = `UnitNo.`, 
+         model = `Reactor`, 
+         status = `Status`, 
+         netMW = `Capacity in MW`,
+         construction = `Construction start`,
+         operation = `Commercial operation`, 
+         closure = Closure)
+
+Japannew <- Japannew%>%
+  mutate(construction = dmy(construction), operation = dmy(operation), closure = dmy(closure),netMW = readr::parse_number(netMW),Country = "Japan")
+Japannew
+
+
+```
+
+#2
+```{r}
+Japannew %>%ggplot(aes(x = construction, y = netMW))+ geom_point()+aes(color = type)
+
+```
+As time goes, the netMW of reactor is roughly growing up. Though there are some reactor newly contructed with low netMW. Also, BWR and PWR are the most used type of reactor.
+
+
+
+#3
+```{r}
+China <- tableList[[10]]
+
+colnames(China)[3]<- "type"
+Chinanew<-China[,-7]
+
+Chinanew<-Chinanew %>%
+  filter(row_number() > 1) %>%
+  rename(name = Name, 
+         reactor = `UnitNo.`, 
+         model = `Reactor`, 
+         status = `Status`, 
+         netMW = `Capacity in MW`,
+         construction = `Construction start`,
+         operation = `Commercial operation`, 
+         closure = Closure)
+
+Chinanew <- Chinanew%>%
+  mutate(construction = dmy(construction), operation = dmy(operation), closure = dmy(closure),netMW = readr::parse_number(netMW),Country= "China")
+
+combined <- Chinanew%>%full_join(Japannew, by = c("name" = "name", "reactor" = "reactor", "type"= "type", "model"= "model", "status"= "status", "netMW" = "netMW", "Country" = "Country", "construction" = "construction", "operation" = "operation", "closure" = "closure"))%>%
+  mutate(duration =operation - construction)
+combined
+```
+
+
+
+
+#4
+```{r}
+library(grid)
+Japannew <- Japannew%>%mutate(duration = operation - construction)
+ggplot(Japannew, aes(construction, name)) + geom_point() + geom_segment(aes(xend = construction + duration, yend = name)) + aes(color = type)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

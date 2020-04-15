@@ -1,0 +1,145 @@
+---
+title: "DC exercise Chapter 12"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 3/24/2020
+---
+
+#1
+1
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(DataComputing)
+library(dplyr)
+data("BabyNames")
+BothSexes <-
+  BabyNames %>%
+  spread( key=sex, value=count ) %>%
+  filter( F>1, M>1 )
+BothSexes
+View(BabyNames)
+```
+
+2
+```{r}
+BothSexes%>%
+  group_by(name)%>%
+  summarise(F = sum(F),M = sum(M))%>%
+  mutate(ratio = abs(log(F/M)))%>%
+  arrange(ratio)
+```
+
+
+3
+```{r}
+BothSexes%>%
+  group_by(name)%>%
+  summarise(F = sum(F),M = sum(M))%>%
+  filter(M > 100, F > 100)%>%
+  mutate(ratio = abs(log(F/M)))%>%
+  arrange(ratio)
+
+
+```
+
+4
+```{r}
+BothSexes%>%
+  filter(year >= 2000)%>%
+  group_by(name)%>%
+  summarise(F = sum(F),M = sum(M))%>%
+  filter(M > 100, F > 100)%>%
+  mutate(ratio = abs(log(F/M)))%>%
+  arrange(ratio)
+
+```
+
+5
+```{r}
+BothSexes%>%
+  group_by(name)%>%
+  mutate(ratio = abs(log(F/M)))
+
+```
+
+#2
+1
+There are n male or female babies born in certain year with the name
+There are number of male and number of female baby with certain name born in this year
+Baby name with male or female have these number of born in 1912 and 2012
+
+2
+BP_narrow%>%
+   spread(key = sex, value = nbabies)
+Version two is wider since sex has been split to m and f from version one.
+
+3
+BP_wide %>%
+  gather(key = year, value = nbabies, 1912, 2012 )
+Version three is wider since 1912 and 2012 can be combined in version one which is narrower
+
+4
+Version two is better, because when mutate the ratio of female and male, F and M have to be in same row. And the result will show each name and year in version two
+
+5
+We should convert version one to two as we need to put M and F in same row, and also there are no need to change year from column to row since column is better for comparison
+
+
+
+#3
+1
+A is wider since the country is spreaded
+B is wider since year is spreaded
+C Can not tell cause each spread one variable
+
+2
+Table two, by compare the data in each row, we can find the difference between years
+
+3
+Table three since we can directly add the continent column and spread only the continent variable. Therefore, the answer would be the data for each continent.
+
+
+
+#4
+1
+The subject has also been gathered, there are no need to gather subject since subject fit to each cases.
+
+2
+BP_wide %>%
+  gather(key = when, value = sbp, before, after)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

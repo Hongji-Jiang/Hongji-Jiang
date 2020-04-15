@@ -1,0 +1,67 @@
+---
+title: "DC Exercise 15"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 4/7/2020
+---
+
+#15.1
+```{r}
+library(ggplot2)
+library(DataComputing)
+library(dplyr)
+```
+
+```{r}
+mosaicData::CPS85
+
+CPS85%>% 
+  ggplot(aes(y = wage, x = sex )) + 
+  geom_boxplot(aes(fill = sex)) + ylab("wage") + xlab( "sex") +  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+#15.2
+1 most likely the height would be 165cm
+2 woman most likely at 161 cm, man most likely at 176 cm
+3 the most likely bmi for 40 years old should be within 25-28, and for 70 years old is within 25-30
+
+#15.3
+```{r}
+
+CPS85 %>% 
+  ggplot(aes(x = educ, y = wage, color = sex)) + stat_smooth(method = lm) + geom_point() + theme(legend.position = "top") + ylim(-1,16)
+
+```
+
+#15.4
+```{r}
+mosaicData::Galton
+Galton%>%ggplot(aes(x = height, y= mother))+facet_wrap(~sex, ncol = 2)+geom_density_2d()
+```
+
+#15.5
+Part 1
+1:no, we can't find a specific trend of the relationship of high elderly populations and high child populations from the graph
+
+2:no, the confidence interval does not fit the data very well.
+
+Part2
+1:The plat line is kind of fit the data since they both have a trend of decrease as x axis increase
+2:The confidence interval at 20 zipcode is about 10, and is about 8 when 80 zipcode. The ratio is about 4/5.
+3:Yes, since confidence band become narrower as there are more points.
+
+
+
+
+
+
+
+
+
+
+
+
+

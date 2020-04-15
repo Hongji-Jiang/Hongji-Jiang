@@ -1,0 +1,53 @@
+---
+title: "Final project"
+author: "Hongji Jiang, Zhi Li"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 4/7/2020
+---
+
+#Guiding Question: What influence our sleep?
+
+
+###Where did you find them?
+On the website of figshare
+
+###Who collected/maintains them?
+Figshare collect these data uploaded from the author
+
+###When & Why were they originally collected?
+The data was collected by Bing Zhai1, Stuart Nicholson, Kyle Montague, Yu Guan, Patrick Olivier, Jason Ellis at 20-5-2019
+
+###What does a case represent in each data source, and how many total cases are available?
+A case represent the sleep time, wake up time, wake up reasons, and all the other aspect that might influence their sleeping condition of the experiment subject and their answer for sleeping condition. (all the other aspect include cafeinated drink(morning, afternoon, evening), exercise time, doze off, mood, drink consumed before bed time, and bedtime routine )
+
+###What are some of the variables that you plan to use
+All the variable in the dataset are planning to use. But we would mutate time to bed and time wakeup into sleep time, which is a new variable. Also, we would use anova model to check which variable would significantly influenced sleeping condition and which is not.
+
+#Explore intuition related to research question
+```{r}
+library(ggplot2)
+Necessary <- Overall_Sleep_Diary%>%
+  group_by(`Day Time Feeling`)%>%
+  summarise(count=n())
+Overall_Sleep_Diary%>%ggplot(aes(x=`Day Time Feeling`))+geom_bar()
+##From the below graph, we can see that it is abovous that there are large proportion of poeple feel Fatigued regard their sleep condition. Therefore, it is significant for us to find the reason, and what caused our flooey sleeping condition.
+```
+
+
+
+
+```{r}
+Overall_Sleep_Diary%>%
+  mutate(the_rank = rank(PartID), ties_broken = row_number(PartID))%>%
+  ggplot(aes(x=ties_broken, y = `Caffeinated drinks (evening)` ))+ aes(color = `Day Time Feeling`) +geom_point()
+
+## From the graph below, it is not confident to say there are relationship between caffeinated drink and sleeping condition(day time feeling). Since there are cases that people feel somewhat who drink caffeinate, or cases that people feel fatigued who does not have caffeinated drinks. Therefore, We need more research.
+```
+
+##Two or more data sources:
+A-Zhai, Bing (2020): Co-sleep: Designing workplace-based wellness through awareness of sleep deprivation (Sleep Diary). figshare. Dataset. https://doi.org/10.25405/data.ncl.11948925.v2
+
+B-Lin, Pin-Hsuan; Lee, Ya-Chen; Chen, Kai-Li; Hsieh, Pei-Lun; Yang, Shang-Yu; Lin, Ying-Lien (2019): Data_Sheet_1_The Relationship Between Sleep Quality and Internet Addiction Among Female College Students.docx. Frontiers. Dataset. https://doi.org/10.3389/fnins.2019.00599.s001
