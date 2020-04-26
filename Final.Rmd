@@ -1,0 +1,328 @@
+---
+title: "Final Project"
+author: "Hongji Jiang, Zhi Li"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+---
+<br>
+<br>
+<br>
+<br>
+
+#Introduction
+First of all, we want to explore the relationship between exercise and sleep to see if exercise can obviously help people with bad sleeping. The first data was from a open lab at the Newcastle University, which recorded the sleep diary of 46 poeple. The data was collected by the National Sleep Foundation. They collect the data from a sleep questionare in 2013, which basically provide the habit of 1000 people and their sleep condition. 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+##First Data
+At first, we use the first data to check if there are an influnce of exercise on sleep condition
+
+
+##Start Coding
+```{r}
+#Load the package and data
+library(ggplot2)
+library(dplyr)
+library(DataComputing)
+library(readr)
+sleepdata2 <- read_csv("Sleepdata2.csv")
+sleepdata2
+```
+
+```{r}
+#Here we want to use the regular expression to transform the data and create a variable that represent exercise or not for each case, then summarise them and plot a bargraph 
+a<-sleepdata2%>%
+  mutate(`Exercise 20 mins` = gsub(pattern = "Morning|Afternoon|Evening|Evening#Morning", replacement = "Do exercise",`Exercise 20 mins`))%>%
+  group_by(`Exercise 20 mins`,`Day Time Feeling`)%>%
+  summarise(count = n())
+```
+<br>
+
+##Plot
+
+```{r}
+a%>%ggplot(aes(x=`Exercise 20 mins`,y=count))+geom_col(aes(colour=`Day Time Feeling`))
+```
+From the plot, we find that there are more people feel fatigued for doing exercise, which means doing exercise have negative impact on their sleeping condition.
+
+We think this might mainly because the sample are too small. Therefore, we decide continue to work on another database which is large enough that contain 1000 data.
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+##Second Data
+
+
+
+###Question
+Since there is large amount of question in the questionnare, we decide to pick some part needed.
+
+####q30
+During the past two weeks, how would you rate your overall sleep quality?
+
+####Answer:
+01 Very good,<br>
+02 Fairly good,<br>
+03 Fairly bad, or<br>
+04 Very bad<br>
+98 DO NOT READ: Refused<br>
+99 DO NOT READ: Don’t know/Not sure<br>
+
+
+
+####q34: 
+Please think about the activities you do at work, at your house, yard work, getting from place to place, and activities you do in your spare time for recreation, exercise or sport. Think only about those physical activities that you do for at least 10 minutes at a time. In the past 7 days, which of the following phrases best describes your activity level?
+
+####Answer for 34
+01 Participate in vigorous activities which require hard physical effort such as: running, cycling, swimming or competitive sports<br>
+02 Participate in moderate physical activities which require more effort than normal such as: yoga, thai chi and weight lifting<br>
+03 Participate in light physical activity such as walking<br>
+04 Participate in no physical activity?<br>
+98 DO NOT READ: Refused<br>
+99 DO NOT READ: Don’t know/Not sure<br>
+
+
+
+####Q36HRS: 
+How much time per day did you spend doing vigorous physical activities in the past 7 days?
+
+####Q38HRS: 
+How much time per day did you spend doing moderate physical activities in the past 7 days?
+
+####Q40HRS: 
+How much time per day did you usually spend doing light physical activities, such as walking, in the past 7 days?
+
+
+####q3701:  
+What time of day did you do vigorous activities?
+
+####q3901:  
+What time of day did you do moderate activities? 
+
+####q4101:  
+What time of day did you do light physical activities?
+
+####Answer for 37, 39, and 41:
+01 More than 8 hours before bedtime,<br>
+02 4 to 8 hours before bedtime, or<br>
+03 Less than 4 hours before bedtime<br>
+98 DO NOT READ: Refused<br>
+99 DO NOT READ: Don’t know/Not sure<br>
+
+
+#Start Coding
+
+import data
+```{r}
+sleepdata <- read.csv("2013sleep.csv",header = T)
+```
+
+
+
+since we hae a raw data, we start by rename the variable that we need
+```{r}
+sleepdata <-sleepdata%>% 
+  rename(
+    vtime = q3701,
+    mtime = q3901,
+    ltime = q4101,
+    vhour = Q36HRS,
+    mhour = Q38HRS,
+    lhour = Q40HRS,
+    condition = q30,
+    exercise = q34,
+    )
+```
+
+
+##Physical activity importance
+
+```{r}
+newdata <- sleepdata%>%
+  select(exercise,condition)%>%
+  group_by(exercise,condition)%>%
+  summarise(number= n())
+
+##Change the Exercise type into string
+i=1
+for (i in 1:18) {
+  if(newdata[i,1]==1){
+    newdata[i,1]="vigorous"
+  }else if(newdata[i,1]==2){
+    newdata[i,1]="moderate"
+  }else if(newdata[i,1]==3){
+    newdata[i,1]="light"
+  }else if(newdata[i,1]==4){
+    newdata[i,1]="no"
+  }else{
+    newdata[i,1]="unkown"
+  }
+  i=i+1
+}
+
+
+##Change the sleep condition into string
+newdata<-newdata%>%
+  mutate(condition = gsub(pattern = "1", replacement = "Very good", condition),
+                condition = gsub(pattern = "2", replacement = "Fairly good", condition),
+                condition = gsub(pattern = "3", replacement = "Fairly bad", condition),
+                condition = gsub(pattern = "4", replacement = "Very bad", condition),
+                condition = gsub(pattern = "98", replacement = "Refused", condition),
+                condition = gsub(pattern = "99", replacement = "Don't know", condition)) 
+newdata
+```
+<br>
+
+```{r}
+newdata%>%ggplot(aes(x=condition,y=exercise))+geom_point()+aes(size=number)
+```
+####Conclusion 1
+From the graph above, we can see that, for people who do exercise, the major proportion of people have fairly good or very good sleep status.
+While for those who does not exercise, the sleep status is evenly distributed. Most of the people who have a idea sleeping experience will do some exercise more or less.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+##Exercise type
+Since we find that exercise did help, we want to check which kind of exercise will be most effective<br>
+
+```{r}
+seconddata<- sleepdata%>%
+  select(vhour,mhour,lhour,condition)%>%
+  mutate(the_rank = rank(vhour), 
+         ties_broken = row_number(vhour))
+#For this part, we need the exercise type answer from questionare, so select three question and sleep condition. And use rank and ties broken create series of cases, so that we can put each single case in plot.
+
+```
+
+###Vigorous Exercise
+
+```{r}
+seconddata%>%ggplot(aes(x=ties_broken,y=condition))+geom_point()+aes(size=vhour)+xlab("cases")+ylab("sleep condition(the higher the more bad)")
+```
+From the graph of vigorous exercise, x is the cases, y is the sleeping condition, and size represent the Exercise time. the larger the circle is, the more exercise a participant have down. From the plot, we can see that there are pretty much the same amount of large circle in each line(maybe less in level 4(very bad)). Therefore, it is not recommended to exercise vigorously in order to help sleep. 
+
+
+###Moderate Exercise
+
+```{r}
+seconddata%>%ggplot(aes(x=ties_broken,y=condition))+geom_point()+aes(size=mhour)+xlab("cases")+ylab("sleep condition(the higher the more bad)")
+
+```
+Different from the vigorous plot, in the moderate plot, we can see that there are obviously much more large circle in 2nd line, which means moderate exercise can help people sleep with fairly good condition or do some improvement.
+
+
+
+###Light Exercise 
+
+```{r}
+seconddata%>%ggplot(aes(x=ties_broken,y=condition))+geom_point()+aes(size=lhour)+xlab("cases")+ylab("sleep condition(the higher the more bad)")
+
+```
+Also, in the light exercise plot, we find the same answer. But large circle(black point) is little bit fewer than the moderate plot.
+
+###Concludsion 2
+Exercise will indeed help poeple improve their sleep condition. But moderate exercise would be most effecient. And vigorous exercise is not recommened.
+
+<br>
+<br>
+<br>
+<br>
+
+##Exercise time
+```{r}
+#By select time related variable and group them, we can plot bar graph
+thirddata<- sleepdata%>%
+  select(vtime,mtime,ltime,condition)%>%
+  group_by(condition,vtime)
+
+
+thirddata%>%ggplot(aes(vtime,fill = factor(condition)))+geom_bar(position = "fill")+xlim(0,4)+xlab("Time exercise before bed")+ggtitle("vigorous exercise")
+```
+Here we have romoved 388 rows. Since we only need to compare three choice: exercise more than 8 hour(1) / 4-8 hour(2) / less than 4 hour(3) before sleep. The unkown and confused choice can be neglected which is in 98 and 99 in x axis  removed.
+From the bar, for exercise time from 1 to 3, the proportion of good sleep is gradually decreasing(red and green are good and fair good sleep).
+
+```{r}
+thirddata<- sleepdata%>%
+  select(vtime,mtime,ltime,condition)%>%
+  group_by(condition,,mtime)
+
+thirddata%>%ggplot(aes(mtime,fill = factor(condition)))+geom_bar(position = "fill")+xlim(0,4)+xlab("Time exercise before bed")+ggtitle("moderate exercise")
+```
+Also, from the plot we can see that there are more who had bad sleep doing exercise within 4 hour before going to bed. And a similar trend to vigorous plot.
+
+
+```{r}
+thirddata<- sleepdata%>%
+  select(vtime,mtime,ltime,condition)%>%
+  group_by(condition,ltime)
+
+thirddata%>%ggplot(aes(ltime,fill = factor(condition)))+geom_bar(position = "fill")+xlim(0,4)+xlab("Time exercise before bed")+ggtitle("light exercise")
+```
+From the light exercise plot, we can not find obvious trend on the proportion of factor(p30) which is sleep condition from good to bad(up to down)
+
+####Conclusion 3
+There are no obvious trend showing us which time zone should we exercise. But if people doing exercise before sleep, we would recommend them do at least 4 hour before going to bed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reference:<br>
+A-Zhai, Bing (2020): Co-sleep: Designing workplace-based wellness through awareness of sleep deprivation (Sleep Diary). figshare. Dataset. https://doi.org/10.25405/data.ncl.11948925.v2
+
+https://www.sleepfoundation.org/professionals/sleep-americar-polls/2013-exercise-and-sleep

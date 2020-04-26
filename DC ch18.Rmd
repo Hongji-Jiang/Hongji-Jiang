@@ -1,0 +1,93 @@
+---
+title: "DC Exercise 18"
+author: "Hongji Jiang"
+output:
+  html_notebook:
+    fig_height: 3
+    fig_width: 5
+data: 4/26/2020
+---
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+
+##18.1
+<br>
+
+###1
+
+house price<br>
+living area<br>
+bathroom number<br>
+fireplace<br>
+bedroom<br>
+
+###2
+No, since there are no branches after living area less than 1080 squarefeet
+<br>
+
+###3
+```{r}
+179796.647-151424.497
+```
+The typical difference is 28372.15
+<br>
+
+###4
+When living area is greater than 2816 square feet, the fireplace that is less or equal to one and greater to one will make difference
+<br>
+<br>
+<br>
+<br>
+
+##18.2
+```{r}
+library(partykit)
+library(party)
+library(dplyr)
+library(ggplot2)
+library(DataComputing)
+DataComputing::NCHS 
+```
+
+###1
+```{r}
+CompleteCases <- 
+  NCHS %>%
+  select(diabetic, weight, age, bmi, chol, smoker) %>%
+  na.omit() 
+CompleteCases %>% nrow()
+
+
+
+mod2 <- party::ctree(diabetic ~ age + bmi, data = CompleteCases)
+
+CompleteCases %>%
+  mutate(probability = as.numeric(predict(mod2)), 
+         likelihood = ifelse(diabetic, probability, 1-probability)) %>%
+  summarise(log_likelihood = sum(log(likelihood)))
+
+```
+<br>
+
+###2
+```{r}
+
+plot(mod2,type = "simple")
+
+```
+<br>
+
+###3
+The highest risk of biabetes is node27. The age that is higher than 60 years old with bmi greater than 35.349 would have 36.8% of chance getting disease or injured
+<br>
+
+###4
+The lowest risk of diabetes is node5. The bmi under 23 and age under 36 have least possibility of 0.2% for getting injured or disease.
+
+
